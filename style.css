@@ -1,0 +1,184 @@
+#record-timer {
+  display: flex;
+  justify-content: center;
+
+  background: #eee;
+  border: 1px solid #999;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 250px;
+}
+
+#sw-time {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+#controls {
+  display: flex;
+  /* margin-top: 2rem;
+  max-width: 28em; */
+  justify-content: center;
+}
+
+audio {
+  visibility: visible !important;
+  width: 100%;
+  margin-top: 0.2rem;
+}
+
+li {
+  list-style: none !important;
+  margin-bottom: 1rem;
+}
+
+#formats {
+  margin-top: 0.5rem;
+  font-size: 80%;
+}
+
+/* record button */
+.btn-record {
+  cursor: pointer;
+  border-radius: 50%;
+  min-width: 60px;
+  height: 60px;
+  background-color: rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+  transition: all 0.2s;
+  position: relative;
+  font-size: 0;
+  display: inline-block;
+}
+
+.icn-record {
+  font-size: 0;
+  display: block;
+  padding: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background-color: #f03;
+  box-sizing: border-box;
+  transition: background-color 0.2s, opacity 0.2s, transform 0.2s;
+  transform-origin: center center;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.icn-record-inner {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  transform-origin: center center;
+  top: 50%;
+  left: 50%;
+  transition: all 0.2s;
+  width: 24px;
+  height: 24px;
+  background-color: transparent;
+  border-radius: 2px;
+}
+
+svg {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.2s;
+  opacity: 1;
+}
+
+/* stop button */
+
+.btn-record.active {
+  /* min-width: 94px; */
+  border-radius: 35px;
+  background-color: rgba(0, 0, 0, 0.3);
+  margin-left: 0;
+  height: 46px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.btn-record.active .icn-record {
+  background-color: white;
+  transform: translate(0, -50%);
+  left: 15px;
+  width: 28px;
+  height: 28px;
+
+  transition: background-color 0.2s, opacity 0.2s !important;
+  /* transform: none !important; */
+  /* position: relative !important; */
+  /* top: initial !important; */
+  /* left: initial !important; */
+}
+
+.btn-record.active .record-timer {
+  opacity: 1;
+}
+
+.btn-record.active .icn-record .icn-record-inner {
+  background-color: #162546;
+  width: 10px;
+  height: 10px;
+}
+
+.btn-record.active .icn-record svg {
+  opacity: 0;
+}
+
+/* btn-pause-record */
+
+.btn-pause-record {
+  visibility: visible;
+  width: 46px;
+  height: 46px;
+  opacity: 1;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+  transition: all 0.2s;
+  position: relative;
+  font-size: 0;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+#pause-svg {
+  width: 12px;
+  height: 15px;
+}
+
+.btn-pause-record svg:not(:root) {
+  overflow: hidden;
+}
+
+time {
+  font-size: 20px;
+}
+
+/* field container */
+
+.fancy-select-wrap {
+  display: inline-block;
+  justify-content: center;
+  width: 55%;
+}
+
+.fancy-select-wrap label {
+  justify-content: center;
+  padding-bottom: 0;
+  font-size: 12px;
+  display: flex;
+  color: #acacac !important;
+  width: 100%;
+}
