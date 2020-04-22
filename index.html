@@ -17,14 +17,56 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   </head>
+  <script>
+    jQuery.ajax({
+      url: "load.php",
+      type: "GET",
+      success: function (result) {
+        console.log(result);
+
+        // var playlist = document.getElementById("playlist");
+        // var source = document.createElement("source");
+        // source.setAttribute("src", result);
+        // playlist.appendChild(source);
+        // playlist.play();
+      },
+    });
+  </script>
   <body>
-    <p>
+    <h1>ABC</h1>
+    <h4>abc</h4>
+    <audio
+      id="backgroundMusic"
+      style="position: fixed; top: -100px;"
+      autoplay="true"
+      controls
+    >
+      <source
+        src="recorded/12922379655ea089f7121e48.20720224.wav"
+        type="audio/wav"
+      />
+    </audio>
+
+    <!-- <audio id="playlist" controls loop>
+      <source src="recorded/12922379655ea089f7121e48.20720224.wav" />
+      <source src="recorded/2251866605ea08a04b13631.83560917.wav" />
+      <source src="recorded/12922379655ea089f7121e48.20720224.wav" />
+    </audio> -->
+
+    <div class="fullscreen-bg" id="bgVideo">
+      <video loop muted autoplay class="fullscreen-bg__video" id="sucessVideo">
+        <!-- <source src="evermind-chronicle-anim-heart.mp4" type="video/mp4" /> -->
+      </video>
+    </div>
+
+    <!-- <div class="container h-100"> -->
+    <p id="successMessage" style="position: relative; top: 800px; left: 380px;">
       <strong>Your thoughts have been saved in the chronicle!</strong><br />Be
       safe, stay strong and true in rising above the chaos.
     </p>
+    <!-- action="./action_page.php" -->
     <form
       name="myForm"
-      action="./action_page.php"
       method="post"
       enctype="multipart/form-data"
       onsubmit="submitForm(event);"
@@ -133,8 +175,9 @@
         </button>
       </div>
     </form>
-    <script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
-    <script src="https://unpkg.com/siriwave/dist/siriwave.js"></script>
-    <script src="js/app.js"></script>
+    <!-- </div> -->
   </body>
+  <script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
+  <!-- <script src="https://unpkg.com/siriwave/dist/siriwave.js"></script> -->
+  <script src="js/app.js"></script>
 </html>

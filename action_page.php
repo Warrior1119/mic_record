@@ -2,18 +2,21 @@
     $recordfile = $_POST['myfile'];
     $email = $_POST['email'];
     $school = $_POST['school'];
+    $url = $_POST['url'];
 
     // recorded file save
     $data = explode( ',', $recordfile );
-    $dir = "recorded";
+    $dir = $url . "/wp-content/themes/recorded";
     $filename = uniqid(rand(), true) . '.mp3';
 
-    if (is_dir($dir) == false) 
+    $folder = "recorded";
+    if (is_dir($folder) == false) 
     {
-        mkdir($dir);
+        mkdir($folder);
     }
-    $filepath = $dir . '/' . $filename;
-    file_put_contents($dir . '/' . $filename, base64_decode($data[1]));
+    $filepath = $folder . '/' . $filename;
+    // file_put_contents($dir . '/' . $filename, base64_decode($data[1]));
+    file_put_contents($folder . '/' . $filename, base64_decode($data[1]));
 
     // connect db
 

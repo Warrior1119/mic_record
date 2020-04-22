@@ -1,3 +1,45 @@
+.fullscreen-bg {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  z-index: -100;
+}
+
+.fullscreen-bg__video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  /* height: 100%; */
+}
+
+/* @media (min-aspect-ratio: 16/9) {
+  .fullscreen-bg__video {
+    height: 300%;
+    top: -100%;
+  }
+}
+
+@media (max-aspect-ratio: 16/9) {
+  .fullscreen-bg__video {
+    width: 300%;
+    left: -100%;
+  }
+}
+
+@media (max-width: 767px) {
+  .fullscreen-bg {
+    background: url("../img/videoframe.jpg") center center / cover no-repeat;
+  }
+
+  .fullscreen-bg__video {
+    display: none;
+  }
+} */
+
 #record-timer {
   display: flex;
   justify-content: center;
@@ -61,7 +103,7 @@ li {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background-color: #f03;
+  background-color: rgb(255, 20, 141);
   box-sizing: border-box;
   transition: background-color 0.2s, opacity 0.2s, transform 0.2s;
   transform-origin: center center;
