@@ -7,7 +7,7 @@
     // recorded file save
     $data = explode( ',', $recordfile );
     $dir = $url . "/wp-content/themes/recorded";
-    $filename = uniqid(rand(), true) . '.mp3';
+    $filename = uniqid(rand(), true) . '.wav';
 
     $folder = "recorded";
     if (is_dir($folder) == false) 
@@ -21,15 +21,15 @@
     // connect db
 
 
-    // $servername = "localhost"; 
-    // $username = "evermindonline1";
-    // $password = "!PdTXu?*";
-    // $db = "staging";
-
     $servername = "localhost"; 
-    $username = "root";
-    $password = "";
-    $db = "local";
+    $username = "evermindonline1";
+    $password = "!PdTXu?*";
+    $db = "staging";
+
+    // $servername = "localhost"; 
+    // $username = "root";
+    // $password = "";
+    // $db = "local";
 
     try {
         $conn = mysqli_connect($servername, $username, $password, $db);

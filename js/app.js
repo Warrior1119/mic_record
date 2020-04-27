@@ -362,14 +362,150 @@ var videoBgContainer = document.getElementById("bgVideo");
 
 var h1 = document.getElementsByTagName("h1");
 var h4 = document.getElementsByTagName("h4");
+var recordbtn = document.getElementById("recordbtn");
 
 var url = document.location.origin;
+recordbtn.src = url + "/wp-content/themes/anim-btn-mic-xloop.gif";
+// recordbtn.src = "assets/anim-btn-mic-xloop.gif";
+// audio autoplay
+var idx = 0;
+var index = 0;
+var notes = [];
+var player = document.getElementById("player");
+var playBtn = document.getElementById("playBtn");
+var pauseBtn = document.getElementById("pauseBtn");
+var audioControl = document.getElementById("audio-control");
+
+playBtn.src = url + "/wp-content/themes/btn-play-murmurs.png";
+pauseBtn.src = url + "/wp-content/themes/btn-pause-murmurs.png";
+// playBtn.src = "assets/btn-play-murmurs.png";
+// pauseBtn.src = "assets/btn-pause-murmurs.png";
+
+audioControl.style.display = "block";
+
+playBtn.style.display = "block";
+pauseBtn.style.display = "none";
+
+playBtn.addEventListener("click", playRecordings);
+pauseBtn.addEventListener("click", pauseRecordings);
+
+function playRecordings() {
+  player.play();
+  playBtn.style.display = "none";
+  pauseBtn.style.display = "block";
+}
+
+function pauseRecordings() {
+  player.pause();
+  playBtn.style.display = "block";
+  pauseBtn.style.display = "none";
+}
+
+jQuery.ajax({
+  url: url + "/wp-content/themes/load.php",
+  // url: "load.php",
+  type: "GET",
+  success: function (result) {
+    var data = JSON.parse(result);
+    var length = data.length;
+    data.forEach((obj) => {
+      // console.log(obj);
+      notes[idx] = obj.record;
+      idx++;
+    });
+
+    //  playing in sequence
+    console.log("notes.....", notes);
+    console.log("length......", length);
+    player.addEventListener(
+      "ended",
+      function () {
+        playNote(length, notes);
+      },
+      false
+    );
+    playNote(length, notes);
+  },
+});
+
+function playNote(length, notes) {
+  console.log("playNote function......");
+  console.log(length, notes);
+  if (index >= length) {
+    stop();
+    return;
+  }
+  var note = notes[index];
+  if (!note) {
+    stop();
+    return;
+  }
+  index++;
+  player.src = note;
+  // player.play();
+}
+
+function stop() {
+  player.removeEventListener("ended", playNote);
+}
+// end audio autoplay
+
+// predetive search
+console.log("abc");
+const search = document.getElementById("search");
+const match = document.getElementById("match-list");
+const limit = 10;
+//search schools.json
+const searchSchools = async (searchText) => {
+  match.style.display = "block";
+  const res = await fetch(url + "/wp-content/themes/schools.json");
+  // const res = await fetch("schools.json");
+  const schools = await res.json();
+  //Get matches to current text input
+  let matches = schools
+    .filter((school) => {
+      const regex = new RegExp(`^${searchText}`, "gi");
+      return school.match(regex);
+    })
+    .slice(0, 10);
+  if (searchText.length === 0) {
+    matches = [];
+    match.innerHTML = "";
+  }
+  outputHtml(matches);
+};
+const outputHtml = (matches) => {
+  if (matches.length > 0) {
+    const html = matches
+      .map(
+        (match) => `
+            <div class = "card card-body mb-1" onclick="setValue('${match}')">
+                <h4 style="color: black">
+                    ${match}
+                </h4>
+            </div>
+        `
+      )
+      .join("");
+    match.innerHTML = html;
+  }
+};
+search.addEventListener("input", () => searchSchools(search.value));
+
+function setValue(value) {
+  console.log(value);
+  search.value = value;
+  match.style.display = "none";
+}
+
+//end search
+
 var sucessVideo = document.getElementById("sucessVideo");
 var sourceTag = document.createElement("source");
 sourceTag.setAttribute(
   "src",
-  // url + "/wp-content/themes/salient/video/evermind-chronicle-anim-heart.mp4"
-  "evermind-chronicle-anim-heart.mp4"
+  url + "/wp-content/themes/salient/video/evermind-chronicle-anim-heart.mp4"
+  // "evermind-chronicle-anim-heart.mp4"
 );
 console.log("src........", sourceTag.src);
 sucessVideo.appendChild(sourceTag);
@@ -549,7 +685,7 @@ function submitForm(e) {
   console.log("Submit!!");
   var myfile = document.getElementById("myfile").value;
   var email = document.getElementById("email").value;
-  var school = document.getElementById("school").value;
+  var schoolvalue = search.value;
 
   var xhr = new XMLHttpRequest();
   // var fd = new FormData();
@@ -558,21 +694,23 @@ function submitForm(e) {
 
   jQuery.ajax({
     type: "POST",
-    // url: url + "/wp-content/themes/action_page.php",
-    url: "action_page.php",
+    url: url + "/wp-content/themes/action_page.php",
+    // url: "action_page.php",
     contentType: "application/x-www-form-urlencoded",
     data: {
       myfile: myfile,
       email: email,
-      school: school,
+      school: schoolvalue,
       url: url,
     },
     success: function (result) {
       myForm.style.display = "none";
       successMessage.style.display = "block";
       videoBgContainer.style.display = "block";
+      player.style.display = "none";
       h1[0].style.display = "none";
       h4[0].style.display = "none";
+      audioControl.style.display = "none";
       console.log("success");
     },
   });

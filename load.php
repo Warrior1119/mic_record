@@ -1,4 +1,9 @@
 <?php
+    // $servername = "mysql.evermind.online"; 
+    // $username = "evermindonline1";
+    // $password = "!PdTXu?*";
+    // $db = "staging";
+
     $servername = "localhost"; 
     $username = "root";
     $password = "";
