@@ -16,58 +16,83 @@
     />
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
   </head>
   <body style="background-color: gray;">
-    <h1>ABC</h1>
-    <h4>abc</h4>
-    <div id="playlist" style="justify-content: center; display: flex;">
-      <audio id="player">
-        <source src="#" />
-      </audio>
-      <div id="audio-control" style="cursor: pointer;">
-        <img id="playBtn" />
-        <img id="pauseBtn" />
-      </div>
-    </div>
-
-    <div class="fullscreen-bg" id="bgVideo">
-      <video loop muted autoplay class="fullscreen-bg__video" id="sucessVideo">
-        <!-- <source src="evermind-chronicle-anim-bg" type="video/mp4" /> -->
-      </video>
-    </div>
-
-    <!-- <div class="container h-100"> -->
-    <p id="successMessage" style="position: relative; top: 800px; left: 380px;">
-      <strong>Your thoughts have been saved in the chronicle!</strong><br />Be
-      safe, stay strong and true in rising above the chaos.
-    </p>
-    <!-- action="./action_page.php" -->
-    <form
-      name="myForm"
-      method="post"
-      enctype="multipart/form-data"
-      onsubmit="submitForm(event);"
-      id="myForm"
-    >
-      <div id="wave"></div>
-      <div id="stopwatch">
-        <div id="sw-time">
-          <time>00:00</time>
+    <div>
+      <!-- <img src="assets/7512-blue-heart.gif" /> -->
+      <h1>ABC</h1>
+      <h4>abc</h4>
+      <div id="playlist" style="justify-content: center; display: flex;">
+        <audio id="player">
+          <source src="#" />
+        </audio>
+        <div id="audio-control" style="cursor: pointer;">
+          <img id="playBtn" />
+          <img id="pauseBtn" />
         </div>
       </div>
-      <div id="controls">
-        <div id="recordButton">
-          <img
-            id="recordbtn"
-            style="
-              border-radius: 150px;
-              width: 75px;
-              height: 75px;
-              cursor: pointer;
-            "
-          />
+
+      <p id="successMessage">
+        <strong>Your thoughts have been saved in the chronicle!</strong><br />Be
+        safe, stay strong and true in rising above the chaos.
+      </p>
+
+      <div id="heart-animation" style="margin-top: 50px;">
+        <lottie-player
+          src="assets/jsn-heart-test.json"
+          background="transparent"
+          speed="1"
+          style="width: 500px; height: 500px;"
+          loop
+          autoplay
+          id="heartLottie"
+        ></lottie-player>
+      </div>
+
+      <!-- <div class="container h-100"> -->
+
+      <form
+        name="myForm"
+        method="post"
+        enctype="multipart/form-data"
+        id="myForm"
+        onsubmit="submitForm(event);"
+      >
+        <!-- action="./action_page.php" -->
+        <div id="wave"></div>
+        <div id="breath-text">
+          <h4>
+            Take a breath and let your thoughts flow free in the next 30
+            seconds.
+          </h4>
         </div>
-        <!-- <div id="recordButton" class="btn-record">
+        <div id="pause-text">
+          <h4>
+            You can press the mic to re-record or place your thoughts into the
+            chronicle now.
+          </h4>
+        </div>
+
+        <div id="stopwatch">
+          <div id="sw-time">
+            <time>00:00</time>
+          </div>
+        </div>
+        <p></p>
+        <div id="controls">
+          <div id="recordButton">
+            <img
+              id="recordbtn"
+              style="
+                border-radius: 150px;
+                width: 75px;
+                height: 75px;
+                cursor: pointer;
+              "
+            />
+          </div>
+          <!-- <div id="recordButton" class="btn-record">
           <i class="icn-record">
             <i class="icn-record-inner"></i>
             <svg
@@ -95,54 +120,57 @@
           </i>
         </div> -->
 
-        <!-- stop button -->
-        <div class="btn-record active" id="stopButton">
-          <i class="icn-record">
-            <i class="icn-record-inner"></i>
-            <svg
-              width="14px"
-              height="19px"
-              viewBox="0 0 14 19"
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <g
-                id="Page-1"
-                stroke="none"
-                stroke-width="1"
-                fill="none"
-                fill-rule="evenodd"
+          <!-- stop button -->
+          <div class="btn-record active" id="stopButton">
+            <i class="icn-record">
+              <i class="icn-record-inner"></i>
+              <svg
+                width="14px"
+                height="19px"
+                viewBox="0 0 14 19"
+                version="1.1"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                <path
-                  d="M7,12 C8.66,12 9.99,10.66 9.99,9 L10,3 C10,1.34 8.66,0 7,0 C5.34,0 4,1.34 4,3 L4,9 C4,10.66 5.34,12 7,12 Z M12.3,9 C12.3,12 9.76,14.1 7,14.1 C4.24,14.1 1.7,12 1.7,9 L0,9 C0,12.41 2.72,15.23 6,15.72 L6,19 L8,19 L8,15.72 C11.28,15.24 14,12.42 14,9 L12.3,9 Z"
-                  id="mic"
-                  fill="#FFFFFF"
-                  fill-rule="nonzero"
-                ></path>
-              </g>
-            </svg>
-          </i>
+                <g
+                  id="Page-1"
+                  stroke="none"
+                  stroke-width="1"
+                  fill="none"
+                  fill-rule="evenodd"
+                >
+                  <path
+                    d="M7,12 C8.66,12 9.99,10.66 9.99,9 L10,3 C10,1.34 8.66,0 7,0 C5.34,0 4,1.34 4,3 L4,9 C4,10.66 5.34,12 7,12 Z M12.3,9 C12.3,12 9.76,14.1 7,14.1 C4.24,14.1 1.7,12 1.7,9 L0,9 C0,12.41 2.72,15.23 6,15.72 L6,19 L8,19 L8,15.72 C11.28,15.24 14,12.42 14,9 L12.3,9 Z"
+                    id="mic"
+                    fill="#FFFFFF"
+                    fill-rule="nonzero"
+                  ></path>
+                </g>
+              </svg>
+            </i>
+          </div>
         </div>
-      </div>
-      <ol id="recordingsList" name="recordingsList"></ol>
+        <p id="please-record">
+          Please record your thoughts before entering the chronicle ..
+        </p>
+        <ol id="recordingsList" name="recordingsList"></ol>
 
-      <input type="hidden" name="myfile" id="myfile" />
+        <input type="hidden" name="myfile" id="myfile" />
 
-      <div class="fancy-select-wrap">
-        <div class="form-group">
-          <input
-            required
-            type="email"
-            class="form-control"
-            name="email"
-            aria-describedby="emailHelp"
-            placeholder="Enter email"
-            id="email"
-          />
-        </div>
+        <div class="fancy-select-wrap">
+          <div class="form-group">
+            <input
+              required
+              type="email"
+              class="form-control"
+              name="email"
+              aria-describedby="emailHelp"
+              placeholder="Enter email"
+              id="email"
+            />
+          </div>
 
-        <div class="form-group">
-          <!-- <select
+          <div class="form-group">
+            <!-- <select
             name="school"
             id="school"
             tabindex="-1"
@@ -153,27 +181,27 @@
             <option value="Second Choice">Second Choice</option>
             <option value="Third Choice">Third Choice</option>
           </select> -->
-          <div class="form-group">
-            <label for="school">Your School</label>
-            <input
-              type="text"
-              id="search"
-              name="school"
-              class="form-control form control-lg"
-              placeholder="Enter School Name..."
-            />
+            <div class="form-group">
+              <label for="school">Your School</label>
+              <input
+                type="text"
+                id="search"
+                name="school"
+                class="form-control form control-lg"
+                placeholder="Enter School Name..."
+              />
+            </div>
+            <div id="match-list" class="match-list"></div>
           </div>
-          <div id="match-list"></div>
         </div>
-      </div>
 
-      <div style="justify-content: center; display: flex; margin-top: 20px;">
-        <button type="submit" class="btn btn-outline-primary" id="submitBtn">
-          I'll get Through This+
-        </button>
-      </div>
-    </form>
-    <!-- </div> -->
+        <div style="justify-content: center; display: flex; margin-top: 20px;">
+          <button type="submit" class="btn btn-outline-primary" id="submitBtn">
+            I'll get Through This+
+          </button>
+        </div>
+      </form>
+    </div>
   </body>
 
   <script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>

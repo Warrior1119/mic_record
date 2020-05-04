@@ -358,15 +358,23 @@ var recordingsList = document.getElementById("recordingsList");
 var swIOS9 = document.getElementById("wave");
 
 var successMessage = document.getElementById("successMessage");
-var videoBgContainer = document.getElementById("bgVideo");
 
 var h1 = document.getElementsByTagName("h1");
 var h4 = document.getElementsByTagName("h4");
 var recordbtn = document.getElementById("recordbtn");
 
+var stopwatch = document.getElementById("stopwatch");
+var breath_text = document.getElementById("breath-text");
+var pause_text = document.getElementById("pause-text");
+
+successMessage.style.display = "none";
+
+stopwatch.style.display = "none";
+breath_text.style.display = "block";
+pause_text.style.display = "none";
 var url = document.location.origin;
-recordbtn.src = url + "/wp-content/themes/anim-btn-mic-xloop.gif";
-// recordbtn.src = "assets/anim-btn-mic-xloop.gif";
+// recordbtn.src = url + "/wp-content/uploads/media/anim-btn-mic-xloop.gif";
+recordbtn.src = "assets/anim-btn-mic-xloop.gif";
 // audio autoplay
 var idx = 0;
 var index = 0;
@@ -376,10 +384,14 @@ var playBtn = document.getElementById("playBtn");
 var pauseBtn = document.getElementById("pauseBtn");
 var audioControl = document.getElementById("audio-control");
 
-playBtn.src = url + "/wp-content/themes/btn-play-murmurs.png";
-pauseBtn.src = url + "/wp-content/themes/btn-pause-murmurs.png";
-// playBtn.src = "assets/btn-play-murmurs.png";
-// pauseBtn.src = "assets/btn-pause-murmurs.png";
+var please_record = document.getElementById("please-record");
+
+please_record.style.display = "none";
+
+// playBtn.src = url + "/wp-content/uploads/media/btn-play-murmurs.png";
+// pauseBtn.src = url + "/wp-content/uploads/media/btn-pause-murmurs.png";
+playBtn.src = "assets/btn-play-murmurs.png";
+pauseBtn.src = "assets/btn-pause-murmurs.png";
 
 audioControl.style.display = "block";
 
@@ -402,14 +414,16 @@ function pauseRecordings() {
 }
 
 jQuery.ajax({
-  url: url + "/wp-content/themes/load.php",
-  // url: "load.php",
+  // url: url + "/wp-content/themes/load.php",
+  url: "load.php",
   type: "GET",
   success: function (result) {
+    console.log("result.................", result);
     var data = JSON.parse(result);
+    console.log(data);
     var length = data.length;
     data.forEach((obj) => {
-      // console.log(obj);
+      console.log(obj);
       notes[idx] = obj.record;
       idx++;
     });
@@ -458,8 +472,8 @@ const limit = 10;
 //search schools.json
 const searchSchools = async (searchText) => {
   match.style.display = "block";
-  const res = await fetch(url + "/wp-content/themes/schools.json");
-  // const res = await fetch("schools.json");
+  // const res = await fetch(url + "/wp-content/themes/schools.json");
+  const res = await fetch("schools.json");
   const schools = await res.json();
   //Get matches to current text input
   let matches = schools
@@ -467,7 +481,7 @@ const searchSchools = async (searchText) => {
       const regex = new RegExp(`^${searchText}`, "gi");
       return school.match(regex);
     })
-    .slice(0, 10);
+    .slice(0, 100);
   if (searchText.length === 0) {
     matches = [];
     match.innerHTML = "";
@@ -479,11 +493,11 @@ const outputHtml = (matches) => {
     const html = matches
       .map(
         (match) => `
-            <div class = "card card-body mb-1" onclick="setValue('${match}')">
-                <h4 style="color: black">
-                    ${match}
-                </h4>
-            </div>
+          <div class = "card card-body search-matches" onclick="setValue('${match}')">
+            <p class="match-label">
+                ${match}
+            </p>
+          </div>
         `
       )
       .join("");
@@ -500,19 +514,15 @@ function setValue(value) {
 
 //end search
 
-var sucessVideo = document.getElementById("sucessVideo");
-var sourceTag = document.createElement("source");
-sourceTag.setAttribute(
-  "src",
-  url + "/wp-content/themes/salient/video/evermind-chronicle-anim-heart.mp4"
-  // "evermind-chronicle-anim-heart.mp4"
-);
-console.log("src........", sourceTag.src);
-sucessVideo.appendChild(sourceTag);
-sucessVideo.play();
+// heart animation
+heartAnimation = document.getElementById("heart-animation");
+heartAnimation.style.display = "none";
 
-successMessage.style.display = "none";
-videoBgContainer.style.display = "none";
+//Record something that matters to you in the chaos
+
+var firstlabel = document.getElementById("firstlabel");
+firstlabel.style.display = "block";
+
 // timer
 var sw_time = document.getElementById("sw-time");
 var seconds = 0,
@@ -556,6 +566,11 @@ stopButton.addEventListener("click", stopRecording);
 stopButton.style.display = "none";
 
 function startRecording() {
+  stopwatch.style.display = "block";
+  breath_text.style.display = "none";
+  pause_text.style.display = "none";
+  please_record.style.display = "none";
+
   while (recordingsList.firstChild) {
     recordingsList.removeChild(recordingsList.firstChild);
   }
@@ -594,6 +609,10 @@ function startRecording() {
 }
 
 function stopRecording() {
+  stopwatch.style.display = "none";
+  pause_text.style.display = "block";
+  breath_text.style.display = "none";
+
   sw_time.textContent = "00:00";
   clearTimeout(t);
   seconds = 0;
@@ -648,6 +667,7 @@ function createDownloadLink(blob) {
 
   au.id = "recordedfile";
   au.setAttribute("name", "recordfile");
+  au.setAttribute("controlList", "nodownload");
 
   link.href = url;
   link.download = filename + ".wav";
@@ -687,15 +707,17 @@ function submitForm(e) {
   var email = document.getElementById("email").value;
   var schoolvalue = search.value;
 
-  var xhr = new XMLHttpRequest();
-  // var fd = new FormData();
-  // fd.append(myfile, email, school);
-  // xhr.send(fd);
+  if (myfile.length == 0) {
+    please_record.style.display = "block";
+    return;
+  }
+
+  console.log(myfile.length);
 
   jQuery.ajax({
     type: "POST",
-    url: url + "/wp-content/themes/action_page.php",
-    // url: "action_page.php",
+    // url: url + "/wp-content/themes/action_page.php",
+    url: "action_page.php",
     contentType: "application/x-www-form-urlencoded",
     data: {
       myfile: myfile,
@@ -704,9 +726,11 @@ function submitForm(e) {
       url: url,
     },
     success: function (result) {
+      console.log(result);
       myForm.style.display = "none";
       successMessage.style.display = "block";
-      videoBgContainer.style.display = "block";
+      heartAnimation.style.display = "block";
+      firstlabel.style.display = "none";
       player.style.display = "none";
       h1[0].style.display = "none";
       h4[0].style.display = "none";

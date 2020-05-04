@@ -1,13 +1,18 @@
 <?php
-    // $servername = "mysql.evermind.online"; 
-    // $username = "evermindonline1";
-    // $password = "!PdTXu?*";
-    // $db = "staging";
+    $servername = "mysql.evermind.online"; 
+    $username = "evermindonline1";
+    $password = "!PdTXu?*";
+    $db = "staging";
 
-    $servername = "localhost"; 
-    $username = "root";
-    $password = "";
-    $db = "local";
+    // $path = preg_replace('/wp-content(?!.*wp-content).*/','',__DIR__);
+    // include $path.'wp-load.php';
+    // global $wpdb;  
+    // $result = $wpdb->get_row("SELECT * FROM `chronic_record` ORDER BY curdate DESC");
+
+    // $servername = "localhost"; 
+    // $username = "root";
+    // $password = "";
+    // $db = "local";
 
     try {
         $conn = mysqli_connect($servername, $username, $password, $db);
