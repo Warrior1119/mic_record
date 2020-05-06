@@ -24,7 +24,7 @@
 
     try {
         $conn = mysqli_connect($servername, $username, $password, $db);
-         echo "Connected successfully";
+        //  echo "Connected successfully";
     } catch(exception $e){
         echo "Connection failed: " . $e->getMessage();
     }
@@ -33,10 +33,9 @@
     $sql = "INSERT INTO `chronic_record` (email, school, record, curdate) VALUES ('$email', '$school', '$filepath', Now())";
     $ret = mysqli_query($conn, $sql);
 
-    echo $conn;
-    exit;
     if ($ret) {
-        echo "Records inserted successfully.";
+        // echo "Records inserted successfully.";
+        echo $filepath;
     } else {
         echo "ERROR: Could not able to execute $sql" . mysqli_error($conn);
     }

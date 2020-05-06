@@ -1,3 +1,11 @@
+.recordButton {
+  border: solid 1px #555;
+  box-shadow: 3px 3px 4px 4px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 3px 3px 4px 4px rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 3px 3px 4px 4px rgba(0, 0, 0, 0.5);
+  -o-box-shadow: 3px 3px 4px 4px rgba(0, 0, 0, 0.5);
+  border-radius: 100px;
+}
 .match-list {
   margin: 4px, 4px;
   padding: 4px;
