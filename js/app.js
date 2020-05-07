@@ -20,19 +20,28 @@ var stopwatch = document.getElementById("stopwatch");
 var breath_text = document.getElementById("breath-text");
 var pause_text = document.getElementById("pause-text");
 
+var first_avatar = document.getElementById("first-avatar");
+var url = document.location.origin;
+
+var social = document.getElementById("social");
+var avatarPlayer = document.getElementById("avatarPlayer");
+
+social.style.display = "none";
 successMessage.style.display = "none";
 
 stopwatch.style.display = "none";
 breath_text.style.display = "block";
 pause_text.style.display = "none";
-var url = document.location.origin;
-// recordbtn.src = url + "/wp-content/uploads/media/anim-btn-mic-xloop.gif";
-recordbtn.src = "assets/anim-btn-mic-xloop.gif";
+recordbtn.src = url + "/wp-content/uploads/media/anim-btn-mic-xloop.gif";
+// recordbtn.src = "assets/anim-btn-mic-xloop.gif";
 
+
+var isEmily = false, isDachelle = false, isSteven = false;
 // audio autoplay
 var idx = 0;
-var index = 0;
+var index = 0, indexOfemily = 0, indexOfdacheele = 0, indexOfsteve = 0;
 var notes = [];
+var emilyData = [], dachelleData=[], stevenData=[];
 var player = document.getElementById("player");
 var playBtn = document.getElementById("playBtn");
 var pauseBtn = document.getElementById("pauseBtn");
@@ -42,10 +51,10 @@ var please_record = document.getElementById("please-record");
 
 please_record.style.display = "none";
 
-// playBtn.src = url + "/wp-content/uploads/media/btn-play-murmurs.png";
-// pauseBtn.src = url + "/wp-content/uploads/media/btn-pause-murmurs.png";
-playBtn.src = "assets/btn-play-murmurs.png";
-pauseBtn.src = "assets/btn-pause-murmurs.png";
+playBtn.src = url + "/wp-content/uploads/media/btn-play-murmurs.png";
+pauseBtn.src = url + "/wp-content/uploads/media/btn-pause-murmurs.png";
+// playBtn.src = "assets/btn-play-murmurs.png";
+// pauseBtn.src = "assets/btn-pause-murmurs.png";
 
 audioControl.style.display = "block";
 
@@ -57,6 +66,7 @@ pauseBtn.addEventListener("click", pauseRecordings);
 
 function playRecordings() {
   player.play();
+  player.autoplay = true;
   playBtn.style.display = "none";
   pauseBtn.style.display = "block";
 }
@@ -73,10 +83,19 @@ jQuery.ajax({
   type: "GET",
   success: function (result) {
     var data = JSON.parse(result);
-    console.log(data);
+    // console.log(data);
     var length = data.length;
+    var i = 0, j = 0;
     data.forEach((obj) => {
-      // console.log(obj);
+      console.log(obj);
+      if (obj.email == "warriorjhs@outlook.com") {
+        emilyData[i] = obj.record;
+        i++;
+      }
+      if (obj.email == "devsuper1119@gmail.com") {
+        dachelleData[j] = obj.record;
+        j++;
+      }
       notes[idx] = obj.record;
       idx++;
     });
@@ -90,13 +109,33 @@ jQuery.ajax({
       false
     );
     playNote(length, notes);
+
+    // avatar
+    emilyPlayer.addEventListener(
+      "ended",
+      function () {
+        emilyNote(i, emilyData);
+      },
+      false
+    );
+    emilyNote(i, emilyData);
+
+    dachellePlayer.addEventListener(
+      "ended",
+      function () {
+        dachelleNote(j, dachelleData);
+      },
+      false
+    );
+    dachelleNote(j, dachelleData);
   },
 });
 
 function playNote(length, notes) {
   // console.log(length, notes);
-  if (index >= length) {
+  if (index > length) {
     stop();
+    pauseRecordings();
     return;
   }
   var note = notes[index];
@@ -104,13 +143,116 @@ function playNote(length, notes) {
     stop();
     return;
   }
+
   index++;
-  player.src = note;
+
+  var timeInterval = 0;
+
+  if (index == 1) {
+    timeInterval = 0;
+  } else if (index % 3 == 1) {
+    timeInterval = 10000;
+  } else {
+    timeInterval = 3000;
+  }
+
+  setTimeout(function () {
+    player.src = note;
+  }, timeInterval);
+
   // player.play();
 }
 
 function stop() {
   player.removeEventListener("ended", playNote);
+}
+
+
+
+function emily() {
+  isEmily = !isEmily;
+  console.log("emily: ", isEmily);
+  if (isEmily) {
+    emilyPlayer.play();
+    emilyPlayer.autoplay = true;
+  } else {
+    emilyPlayer.pause();
+  }
+}
+
+function emilyNote(length, notes) {
+  // console.log(length, notes);
+  if (indexOfemily > length) {
+    isEmily = false;
+    return;
+  }
+  var note = notes[indexOfemily];
+  if (!note) {
+    isEmily = false;
+    return;
+  }
+
+  indexOfemily++;
+
+  var timeInterval = 0;
+
+  if (indexOfemily == 1) {
+    timeInterval = 0;
+  } else if (indexOfemily % 3 == 1) {
+    timeInterval = 10000;
+  } else {
+    timeInterval = 3000;
+  }
+
+  setTimeout(function () {
+    emilyPlayer.src = note;
+  }, timeInterval);
+
+  // player.play();
+}
+
+function dachelle() {
+  isDachelle = !isDachelle;
+  console.log("dachelle");
+  if (isDachelle) {
+    dachellePlayer.play();
+    dachellePlayer.autoplay = true;
+  } else {
+    dachellePlayer.pause();
+  }
+}
+
+function dachelleNote(length, notes) {
+  // console.log(length, notes);
+  if (indexOfdacheele > length) {
+    stop();
+    isDachelle = false;
+    return;
+  }
+  var note = notes[indexOfdacheele];
+  if (!note) {
+    stop();
+    isDachelle = false;
+    return;
+  }
+
+  indexOfdacheele++;
+
+  var timeInterval = 0;
+
+  if (indexOfdacheele == 1) {
+    timeInterval = 0;
+  } else if (indexOfdacheele % 3 == 1) {
+    timeInterval = 10000;
+  } else {
+    timeInterval = 3000;
+  }
+
+  setTimeout(function () {
+    dachellePlayer.src = note;
+  }, timeInterval);
+
+  // player.play();
 }
 // end audio autoplay
 
@@ -121,8 +263,8 @@ const limit = 10;
 //search schools.json
 const searchSchools = async (searchText) => {
   match.style.display = "block";
-  // const res = await fetch(url + "/wp-content/themes/schools.json");
-  const res = await fetch("assets/schools.json");
+  const res = await fetch(url + "/wp-content/themes/schools.json");
+  // const res = await fetch("assets/schools.json");
   const schools = await res.json();
   //Get matches to current text input
   let matches = schools
@@ -171,8 +313,8 @@ heartAnimation = document.getElementById("heart-animation");
 heartAnimation.style.display = "none";
 
 //Record something that matters to you in the chaos
-// var firstlabel = document.getElementById("firstlabel");
-// firstlabel.style.display = "block";
+var firstlabel = document.getElementById("firstlabel");
+firstlabel.style.display = "block";
 
 // timer
 var sw_time = document.getElementById("sw-time");
@@ -215,7 +357,10 @@ stopButton.addEventListener("click", stopRecording);
 
 stopButton.style.display = "none";
 
+swIOS9.style.display = "none";
+
 function startRecording() {
+  swIOS9.style.display = "block";
   stopwatch.style.display = "block";
   breath_text.style.display = "none";
   pause_text.style.display = "none";
@@ -341,10 +486,6 @@ function createDownloadLink(blob) {
   recordingsList.appendChild(li);
 }
 
-// social sharing function
-var social = document.getElementById("social");
-social.style.display = "none";
-// end social sharing function
 
 function submitForm(e) {
   e.preventDefault();
@@ -362,8 +503,8 @@ function submitForm(e) {
 
   jQuery.ajax({
     type: "POST",
-    // url: url + "/wp-content/themes/action_page.php",
-    url: "php/action_page.php",
+    url: url + "/wp-content/themes/action_page.php",
+    // url: "action_page.php",
     contentType: "application/x-www-form-urlencoded",
     data: {
       myfile: myfile,
@@ -376,10 +517,11 @@ function submitForm(e) {
       myForm.style.display = "none";
       successMessage.style.display = "block";
       heartAnimation.style.display = "block";
-      // firstlabel.style.display = "none";
+      firstlabel.style.display = "none";
       player.style.display = "none";
-      // title.style.display = "none";
+      title.style.display = "none";
       audioControl.style.display = "none";
+      first_avatar.style.display = "none";
 
       console.log("success");
 

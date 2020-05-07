@@ -6,7 +6,7 @@
     // recorded file save
     $data = explode( ',', $recordfile );
     // $dir = $url . "/wp-content/themes/recorded";
-    $dir = "recorded";
+    $dir = "./recorded";
     $filename = uniqid(rand(), true) . '.wav';
     if (is_dir($dir) == false) 
     {
