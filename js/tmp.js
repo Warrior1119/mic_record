@@ -1,4 +1,3 @@
-var isServer = 0;
 var gumStream;
 var rec;
 var input;
@@ -33,12 +32,8 @@ successMessage.style.display = "none";
 stopwatch.style.display = "none";
 breath_text.style.display = "block";
 pause_text.style.display = "none";
-
-if (isServer == 1 ) {
-  recordbtn.src = url + "/wp-content/uploads/media/anim-btn-mic-xloop.gif"; 
-} else {
-  recordbtn.src = "assets/anim-btn-mic-xloop.gif";
-}
+recordbtn.src = url + "/wp-content/uploads/media/anim-btn-mic-xloop.gif";
+// recordbtn.src = "assets/anim-btn-mic-xloop.gif";
 
 
 var isEmily = false, isDachelle = false, isSteven = false;
@@ -64,28 +59,20 @@ var emilyAvatar = document.getElementById("emilyAvatar");
 var dachelleAvatar = document.getElementById("dachelleAvatar");
 var stevenAvatar = document.getElementById("stevenAvatar");
 
+emilyAvatar.src = url + "/wp-content/uploads/media/avatar-emily.png";
+dachelleAvatar.src = url + "/wp-content/uploads/media/avatar-dachelle.png"
+stevenAvatar.src = url + "/wp-content/uploads/media/avatar-steven.png"
 
-if (isServer == 1) {
-  emilyAvatar.src = url + "/wp-content/uploads/media/avatar-emily.png";
-  dachelleAvatar.src = url + "/wp-content/uploads/media/avatar-dachelle.png"
-  stevenAvatar.src = url + "/wp-content/uploads/media/avatar-steven.png"
-} else {
-  emilyAvatar.src = "assets/avatar-emily.png";
-  dachelleAvatar.src = "assets/avatar-dachelle.png"
-  stevenAvatar.src = "assets/avatar-steven.png"
-}
-
-
+// emilyAvatar.src = "assets/avatar-emily.png";
+// dachelleAvatar.src = "assets/avatar-dachelle.png"
+// stevenAvatar.src = "assets/avatar-steven.png"
 
 please_record.style.display = "none";
 
-if (isServer == 1) {
-  playBtn.src = url + "/wp-content/uploads/media/btn-play-murmurs.png";
-  pauseBtn.src = url + "/wp-content/uploads/media/btn-pause-murmurs.png";
-} else {
-  playBtn.src = "assets/btn-play-murmurs.png";
-  pauseBtn.src = "assets/btn-pause-murmurs.png";
-}
+playBtn.src = url + "/wp-content/uploads/media/btn-play-murmurs.png";
+pauseBtn.src = url + "/wp-content/uploads/media/btn-pause-murmurs.png";
+// playBtn.src = "assets/btn-play-murmurs.png";
+// pauseBtn.src = "assets/btn-pause-murmurs.png";
 
 audioControl.style.display = "block";
 
@@ -96,7 +83,6 @@ playBtn.addEventListener("click", playRecordings);
 pauseBtn.addEventListener("click", pauseRecordings);
 
 function playRecordings() {
-  // var playPromise = player.play();
   player.play();
   player.autoplay = true;
   playBtn.style.display = "none";
@@ -105,8 +91,6 @@ function playRecordings() {
 
 function pauseRecordings() {
   player.pause();
-  playNote(0, notes);
-  player.currentTime = 0;
   playBtn.style.display = "block";
   pauseBtn.style.display = "none";
 }
@@ -128,47 +112,35 @@ jQuery('input[type="checkbox"]').click(function(){
 var i = 0, j = 0, k = 0;
 
 jQuery.ajax({
-  // url: url + "/wp-content/themes/load.php",
-  url: "php/load.php",
+  url: url + "/wp-content/themes/load.php",
+  // url: "php/load.php",
   type: "GET",
   success: function (result) {
-    var data = JSON.parse(result);
-    var length = data.length;
-    console.log(data);
+    var res = JSON.parse(result);
     
+    var data = res['all'];
+    var length = data.length;
+    // console.log(data);
+    
+    var playlist = res['playlist'];
+    playlist.forEach( (obj) => {
+      console.log(obj);
+      let newlist = obj.playlist.split(",");
+      console.log(obj.email);
+      list.playback.push({
+        "email": obj.email,
+        "playlist": newlist
+      });
+    })
+
+    console.log(data);
     data.forEach((obj) => {
-      if (isServer == 1) {
-        notes[idx] = obj.timecapsule;
-      } else {
-        notes[idx] = obj.record;
-      }
+      console.log(obj);
+      notes[idx] = obj.timecapsule;
+      // notes[idx] = obj.record;
       idx++;
-      if ((obj.email == "warriorjhs@outlook.com")) {
-        if (isServer == 1) {
-          emilyData[i] = obj.timecapsule;
-        } else {
-          emilyData[i] = obj.record;
-        }
-        i++;
-      }
-      if ((obj.email == "hi@ivymahsciao.com")) {
-        if (isServer == 1) {
-          dachelleData[j] = obj.timecapsule;
-        } else {
-          dachelleData[j] = obj.record;
-        }
-        j++;
-      }
-      if ((obj.email == "tjeng831@berkeley.edu")) {
-        if (isServer == 1) {
-          stevenData[k] = obj.timecapsule;
-        } else {
-          stevenData[k] = obj.record;
-        }
-        k++;
-      }
     });
-    console.log(stevenData);
+
     console.log(notes);
 
     //  playing in sequence
@@ -181,34 +153,10 @@ jQuery.ajax({
     );
     playNote(length, notes);
 
+    createPlaylist("warriorjhs@outlook.com");
+    createPlaylist("hi@ivymahsciao.com");
+    createPlaylist("tjeng831@berkeley.edu");
 
-    // avatar
-    emilyPlayer.addEventListener(
-      "ended",
-      function () {
-        emilyNote(i, emilyData);
-      },
-      false
-    );
-    emilyNote(i, emilyData);
-
-    dachellePlayer.addEventListener(
-      "ended",
-      function () {
-        dachelleNote(j, dachelleData);
-      },
-      false
-    );
-    dachelleNote(j, dachelleData);
-
-    stevenPlayer.addEventListener(
-      "ended",
-      function () {
-        stevenNote(k, stevenData);
-      },
-      false
-    );
-    stevenNote(k, stevenData);
   },
 });
 
@@ -216,11 +164,13 @@ jQuery.ajax({
 function playNote(length, notes) {
   // console.log(length, notes);
   if (index >= length) {
-    player.pause();
+    // stop();
+    pauseRecordings();
     return;
   }
   var note = notes[index];
   if (!note) {
+    // stop();
     return;
   }
 
@@ -243,50 +193,128 @@ function playNote(length, notes) {
   // player.play();
 }
 
+function stop() {
+  player.removeEventListener("ended", playNote);
+}
+
+function createPlaylist(emailAddress) {
+  list.playback.forEach((obj) => {
+    if (obj.email == emailAddress) {
+      if (emailAddress=="warriorjhs@outlook.com") {
+          emilyData[i] = obj.playlist;
+          console.log(obj.playlist)
+          i++;
+      } 
+      if(emailAddress=="hi@ivymahsciao.com") {
+          dachelleData[j] = obj.playlist;
+          j++;
+      }
+      if (emailAddress == "tjeng831@berkeley.edu") {
+          stevenData[k] = obj.playlist;
+          k++;
+      }
+    }
+  });
+
+  console.log(emilyData);
+  console.log(dachelleData);
+  console.log(stevenData);
+  if (emailAddress == "warriorjhs@outlook.com") {
+    console.log(emilyData);
+    emilyPlayer.addEventListener(
+      "ended",
+      function () {
+        emilyNote(i, emilyData);
+      },
+      false
+    );
+    emilyNote(i, emilyData);
+  }
+
+  if (emailAddress == "hi@ivymahsciao.com") {
+    dachellePlayer.addEventListener(
+      "ended",
+      function () {
+        dachelleNote(j, dachelleData);
+      },
+      false
+    );
+    dachelleNote(j, dachelleData);
+  }
+
+  if (emailAddress == "tjeng831@berkeley.edu") {
+    stevenPlayer.addEventListener(
+      "ended",
+      function () {
+        stevenNote(k, stevenData);
+      },
+      false
+    );
+  }
+}
+
+
 
 function emily() {
   isEmily = !isEmily;
   console.log("emily: ", isEmily);
   if (isEmily) {
     emilyPlayer.play();
-    if (isServer == 1) {
-      emilyAvatar.src = url + "/wp-content/uploads/media/avatar-emily-pause.png";
-    } else {
-      emilyAvatar.src = "assets/avatar-emily-pause.png";
-    }
     emilyPlayer.autoplay = true;
+    // emilyAvatar.src = "assets/avatar-emily-pause.png";
+    emilyAvatar.src = url + "/wp-content/uploads/media/avatar-emily-pause.png";
   } else {
-    if (isServer == 1) {
-      emilyAvatar.src = url + "/wp-content/uploads/media/avatar-emily.png";
-    } else {
-      emilyAvatar.src = "assets/avatar-emily.png";
-    }
-    emilyPlayer.autoplay = false;
     emilyPlayer.pause();
+    // emilyAvatar.src = "assets/avatar-emily.png";
+    emilyPlayer.autoplay = false;
+    emilyAvatar.src = url + "/wp-content/uploads/media/avatar-emily.png";
+  }
+}
+
+function dachelle() {
+  isDachelle = !isDachelle;
+  console.log("dachelle");
+  if (isDachelle) {
+    dachellePlayer.play();
+    dachellePlayer.autoplay = true;
+    // dachelleAvatar.src = "assets/avatar-dachelle-pause.png";
+    dachelleAvatar.src = url + "/wp-content/uploads/media/avatar-dachelle-pause.png";
+  } else {
+    dachellePlayer.pause();
+    // dachelleAvatar.src = "assets/avatar-dachelle.png";
+    dachelleAvatar.src = url + "/wp-content/uploads/media/avatar-dachelle.png";
+    dachellePlayer.autoplay = false;
+  }
+}
+
+function steven() {
+  isSteven = !isSteven;
+  if (isSteven) {
+    stevenPlayer.play();
+    stevenPlayer.autoplay = true;
+    // stevenAvatar.src = "assets/avatar-steven-pause.png";
+    stevenAvatar.src = url + "/wp-content/uploads/media/avatar-steven-pause.png";
+  } else {
+    stevenPlayer.pause();
+    stevenPlayer.autoplay = false;
+    // stevenAvatar.src = "assets/avatar-steven.png";
+    stevenAvatar.src = url + "/wp-content/uploads/media/avatar-steven.png";
   }
 }
 
 function emilyNote(length, notes) {
-  // console.log(length, notes);
+  console.log("emilyNote");
   if (indexOfemily >= length) {
+    console.log("ended...");
     isEmily = false;
     emilyPlayer.pause();
-    if (isServer == 1) {
-      emilyAvatar.src = url + "/wp-content/uploads/media/avatar-emily.png";
-    } else {
-      emilyAvatar.src = "assets/avatar-emily.png";
-    }
+    // emilyAvatar.src = "assets/avatar-emily.png";
+    emilyAvatar.src = url + "/wp-content/uploads/media/avatar-emily.png";
     return;
   }
   var note = notes[indexOfemily];
   if (!note) {
     isEmily = false;
-    emilyPlayer.pause();
-    if (isServer == 1) {
-      emilyAvatar.src = url + "/wp-content/uploads/media/avatar-emily.png";
-    } else {
-      emilyAvatar.src = "assets/avatar-emily.png";
-    }
     return;
   }
 
@@ -309,48 +337,19 @@ function emilyNote(length, notes) {
   // player.play();
 }
 
-function dachelle() {
-  isDachelle = !isDachelle;
-  console.log("dachelle");
-  if (isDachelle) {
-    dachellePlayer.play();
-    dachellePlayer.autoplay = true;
-    if (isServer == 1) {
-      dachelleAvatar.src = url + "/wp-content/uploads/media/avatar-dachelle-pause.png";
-    } else {
-      dachelleAvatar.src = "assets/avatar-dachelle-pause.png";
-    }
-  } else {
-    dachellePlayer.pause();
-    if (isServer == 1) {
-      dachelleAvatar.src = url + "/wp-content/uploads/media/avatar-dachelle.png";
-    } else {
-      dachelleAvatar.src = "assets/avatar-dachelle.png";
-    }
-    dachellePlayer.autoplay = false;
-  }
-}
-
 function dachelleNote(length, notes) {
-  // console.log(length, notes);
+  console.log("dachelle", length, indexOfdacheele)
   if (indexOfdacheele >= length) {
+    console.log("ended.....dachelle....");
     isDachelle = false;
     dachellePlayer.pause();
-    if (isServer == 1) {
-      dachelleAvatar.src = url + "/wp-content/uploads/media/avatar-dachelle.png";
-    } else {
-      dachelleAvatar.src = "assets/avatar-dachelle.png";
-    }
+    // dachelleAvatar.src = "assets/avatar-dachelle.png";
+    dachelleAvatar.src = url + "/wp-content/uploads/media/avatar-dachelle.png";
     return;
   }
   var note = notes[indexOfdacheele];
   if (!note) {
     isDachelle = false;
-    if (isServer == 1) {
-      dachelleAvatar.src = url + "/wp-content/uploads/media/avatar-dachelle.png";
-    } else {
-      dachelleAvatar.src = "assets/avatar-dachelle.png";
-    }
     return;
   }
 
@@ -373,47 +372,18 @@ function dachelleNote(length, notes) {
   // player.play();
 }
 
-
-function steven() {
-  isSteven = !isSteven;
-  if (isSteven) {
-    stevenPlayer.play();
-    stevenPlayer.autoplay = true;
-    if (isServer == 1) {
-      stevenAvatar.src = url + "/wp-content/uploads/media/avatar-steven-pause.png";
-    } else {
-      stevenAvatar.src = "assets/avatar-steven-pause.png";
-    }
-  } else {
-    stevenPlayer.pause();
-    stevenPlayer.autoplay = false;
-    if (isServer == 1) {
-      stevenAvatar.src = url + "/wp-content/uploads/media/avatar-steven.png";
-    } else {
-      stevenAvatar.src = "assets/avatar-steven.png";
-    }
-  }
-}
-
 function stevenNote(length, notes) {
+  // console.log(length, notes);
   if (indexOfsteven >= length) {
     isSteven = false;
     stevenPlayer.pause();
-    if (isServer == 1) {
-      stevenAvatar.src = url + "/wp-content/uploads/media/avatar-steven-pause.png";
-    } else {
-      stevenAvatar.src = "assets/avatar-steven.png";
-    }
+    // stevenAvatar.src = "assets/avatar-steven.png";
+    stevenAvatar.src = url + "/wp-content/uploads/media/avatar-steven.png";
     return;
   }
   var note = notes[indexOfsteven];
   if (!note) {
     isSteven = false;
-    if (isServer == 1) {
-      stevenAvatar.src = url + "/wp-content/uploads/media/avatar-steven-pause.png";
-    } else {
-      stevenAvatar.src = "assets/avatar-steven.png";
-    }
     return;
   }
 
@@ -442,11 +412,8 @@ const limit = 10;
 //search schools.json
 const searchSchools = async (searchText) => {
   match.style.display = "block";
-  if (isServer == 1) {
-    const res = await fetch(url + "/wp-content/themes/schools.json");
-  } else {
-    const res = await fetch("assets/schools.json");
-  }
+  const res = await fetch(url + "/wp-content/themes/schools.json");
+  // const res = await fetch("assets/schools.json");
   const schools = await res.json();
   //Get matches to current text input
   let matches = schools
@@ -495,10 +462,8 @@ heartAnimation = document.getElementById("heart-animation");
 heartAnimation.style.display = "none";
 
 //Record something that matters to you in the chaos
-if (isServer == 1) {
-  var firstlabel = document.getElementById("firstlabel");
-  firstlabel.style.display = "block";
-}
+var firstlabel = document.getElementById("firstlabel");
+firstlabel.style.display = "block";
 
 // timer
 var sw_time = document.getElementById("sw-time");
@@ -678,7 +643,7 @@ function submitForm(e) {
   var email = document.getElementById("email").value;
   var firstName = document.getElementById("firstName").value;
   var lastName = document.getElementById("lastName").value;
-  var fullName = firstName + " " + lastName;
+  var userName = firstName + " " + lastName;
 
   var schoolvalue = search.value;
 
@@ -691,24 +656,24 @@ function submitForm(e) {
 
   jQuery.ajax({
     type: "POST",
-    // url: url + "/wp-content/themes/action_page.php",
-    url: "action_page.php",
+    url: url + "/wp-content/themes/action_page.php",
+    // url: "action_page.php",
     contentType: "application/x-www-form-urlencoded",
     data: {
       myfile: myfile,
       email: email,
       school: schoolvalue,
       url: url,
-      fullname: fullName
+      fullname: userName
     },
     success: function (result) {
       console.log(result);
       myForm.style.display = "none";
       successMessage.style.display = "block";
       heartAnimation.style.display = "block";
-      // firstlabel.style.display = "none";
-      // title.style.display = "none";
+      firstlabel.style.display = "none";
       player.style.display = "none";
+      title.style.display = "none";
       audioControl.style.display = "none";
       first_avatar.style.display = "none";
 

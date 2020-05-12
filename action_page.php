@@ -3,6 +3,8 @@
     $email = $_POST['email'];
     $school = $_POST['school'];
     $url = $_POST['url'];
+    $fullname = $_POST['fullname'];
+
     // recorded file save
     $data = explode( ',', $recordfile );
     // $dir = $url . "/wp-content/themes/recorded";
@@ -30,7 +32,7 @@
     }
 
 
-    $sql = "INSERT INTO `chronic_record` (email, school, record, curdate) VALUES ('$email', '$school', '$filepath', Now())";
+    $sql = "INSERT INTO `chronic_record` (email, school, record, curdate, fullname) VALUES ('$email', '$school', '$filepath', Now(), '$fullname')";
     $ret = mysqli_query($conn, $sql);
 
     if ($ret) {

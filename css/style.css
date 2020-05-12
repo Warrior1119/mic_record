@@ -1,4 +1,76 @@
-.avatar {
+@media(max-width: 1240px) {
+  .steven {
+    top: 230px !important;
+    right: -90px !important;
+  }
+  .checkboxclass {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+  .inputClass {
+    width: 100% !important;
+    margin-left: 0px !important;
+  }
+  .fancy-select-wrap {
+      width: 30% !important;
+  }
+  #search {
+     height: 10px !important;
+  }
+}
+
+@media(max-width: 768px) {
+  .steven {
+    top: 260px !important;
+    right: -30px !important;
+  }
+  .checkboxclass {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+  .inputClass {
+    width: 100% !important;
+    margin-left: 0px !important;
+  }
+  .fancy-select-wrap {
+      width: 65% !important;
+  }
+  #search {
+     height: 10px !important;
+  }
+}
+
+@media(max-width: 475px) {
+  .checkboxclass {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+  .steven {
+    top: 280px !important;
+    right: -80px !important;
+  }
+  .imgavatar {
+    height: 110px !important;
+  }
+  .inputClass {
+    width: 100% !important;
+    margin-left: 0px !important;
+  }
+  .fancy-select-wrap {
+      width: 100% !important;
+  }
+  #search {
+     height: 10px !important;
+  }
+}
+
+.steven {
+  position: absolute;
+  top: 160px;
+  right: 0px;
+}
+
+.imgavatar {
   height: 150px;
   cursor: pointer;
 }
