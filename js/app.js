@@ -1,118 +1,100 @@
 var isServer = 0;
+
+var mask = document.getElementById("wait-text");
 var gumStream;
 var rec;
 var input;
 var AudioContext = window.AudioContext || window.webkitAudioContext;
 var audioContext;
-
 var myForm = document.getElementById("myForm");
-
 var recordButton = document.getElementById("recordButton");
 var stopButton = document.getElementById("stopButton");
 var recordingsList = document.getElementById("recordingsList");
 var swIOS9 = document.getElementById("wave");
-
 var successMessage = document.getElementById("successMessage");
-
 var title = document.getElementById("chronicle_title");
 var recordbtn = document.getElementById("recordbtn");
-
 var stopwatch = document.getElementById("stopwatch");
 var breath_text = document.getElementById("breath-text");
 var pause_text = document.getElementById("pause-text");
-
-var first_avatar = document.getElementById("first-avatar");
-var url = document.location.origin;
-
 var social = document.getElementById("social");
 var avatarPlayer = document.getElementById("avatarPlayer");
+var publicField = document.getElementById("publicField");
+var avatar = document.getElementById("avatar");
+var url = document.location.origin;
 
-social.style.display = "none";
+console.log(url);
+
+// social.style.display = "none";
 successMessage.style.display = "none";
+mask.style.display = "none";
 
 stopwatch.style.display = "none";
 breath_text.style.display = "block";
 pause_text.style.display = "none";
 
-if (isServer == 1 ) {
-  recordbtn.src = url + "/wp-content/uploads/media/anim-btn-mic-xloop.gif"; 
+if (isServer == 1) {
+  recordbtn.src = url + "/wp-content/uploads/media/anim-btn-mic-xloop.gif";
 } else {
   recordbtn.src = "assets/anim-btn-mic-xloop.gif";
 }
 
-
-var isEmily = false, isDachelle = false, isSteven = false;
 // audio autoplay
+var isFirstAvatar = false,
+  isSecondAvatar = false,
+  isThirdAvatar = false,
+  isHear = false;
 var idx = 0;
-var index = 0, indexOfemily = 0, indexOfdacheele = 0, indexOfsteven = 0;
+var index = -1,
+  firstAvatarIndex = -1,
+  secondAvatarIndex = -1,
+  thirdAvatarIndex = -1;
 var notes = [];
-var emilyData = [], dachelleData=[], stevenData=[];
+var firstAvatarData = [],
+  secondAvatarData = [],
+  thirdAvatarData = [];
+
 var player = document.getElementById("player");
-var playBtn = document.getElementById("playBtn");
-var pauseBtn = document.getElementById("pauseBtn");
+var firstAvatarPlayer = document.getElementById("firstAvatarPlayer");
+var secondAvatarPlayer = document.getElementById("secondAvatarPlayer");
+var thirdAvatarPlayer = document.getElementById("thirdAvatarPlayer");
+
+var hearMurmers = document.getElementById("hearMurmers");
 var audioControl = document.getElementById("audio-control");
 
 var please_record = document.getElementById("please-record");
 var fullname = document.getElementById("fullname");
 var list = {
-  playback: []
+  playback: [],
 };
 
+var playallTime, firstTimeout, secondTimeout, thirdTimeout;
 fullname.style.display = "none";
 
-var emilyAvatar = document.getElementById("emilyAvatar");
-var dachelleAvatar = document.getElementById("dachelleAvatar");
-var stevenAvatar = document.getElementById("stevenAvatar");
-
-
-if (isServer == 1) {
-  emilyAvatar.src = url + "/wp-content/uploads/media/avatar-emily.png";
-  dachelleAvatar.src = url + "/wp-content/uploads/media/avatar-dachelle.png"
-  stevenAvatar.src = url + "/wp-content/uploads/media/avatar-steven.png"
-} else {
-  emilyAvatar.src = "assets/avatar-emily.png";
-  dachelleAvatar.src = "assets/avatar-dachelle.png"
-  stevenAvatar.src = "assets/avatar-steven.png"
-}
-
-
-
-please_record.style.display = "none";
+var firstAvatarImg = document.getElementById("firstAvatarImg");
+var secondAvatarImg = document.getElementById("secondAvatarImg");
+var thirdAvatarImg = document.getElementById("thirdAvatarImg");
 
 if (isServer == 1) {
-  playBtn.src = url + "/wp-content/uploads/media/btn-play-murmurs.png";
-  pauseBtn.src = url + "/wp-content/uploads/media/btn-pause-murmurs.png";
+  hearMurmers.src = url + "/wp-content/uploads/media/btn-play-voices.png";
+  firstAvatarImg.src = url + "/wp-content/uploads/media/avatar-emily-temp.png";
+  secondAvatarImg.src = url + "/wp-content/uploads/media/avatar-dachelle.png";
+  thirdAvatarImg.src = url + "/wp-content/uploads/media/avatar-richard.png";
 } else {
-  playBtn.src = "assets/btn-play-murmurs.png";
-  pauseBtn.src = "assets/btn-pause-murmurs.png";
+  hearMurmers.src = "assets/btn-play-voices.png";
+  firstAvatarImg.src = "assets/avatar-emily-temp.png";
+  secondAvatarImg.src = "assets/avatar-dachelle.png";
+  thirdAvatarImg.src = "assets/avatar-richard.png";
 }
 
-audioControl.style.display = "block";
+var i = 0,
+  j = 0,
+  k = 0;
+var length = 0;
+var tmpIndex = -1;
 
-playBtn.style.display = "block";
-pauseBtn.style.display = "none";
-
-playBtn.addEventListener("click", playRecordings);
-pauseBtn.addEventListener("click", pauseRecordings);
-
-function playRecordings() {
-  // var playPromise = player.play();
-  player.play();
-  player.autoplay = true;
-  playBtn.style.display = "none";
-  pauseBtn.style.display = "block";
-}
-
-function pauseRecordings() {
-  player.pause();
-  playNote(0, notes);
-  player.currentTime = 0;
-  playBtn.style.display = "block";
-  pauseBtn.style.display = "none";
-}
-
-jQuery('input[type="checkbox"]').click(function(){
-  if(jQuery(this).prop("checked") == true){
+jQuery('input[type="checkbox"]').click(function () {
+  if (jQuery(this).prop("checked") == true) {
     console.log("true");
     fullname.style.display = "block";
     firstName.required = true;
@@ -125,51 +107,50 @@ jQuery('input[type="checkbox"]').click(function(){
   }
 });
 
-var i = 0, j = 0, k = 0;
-
 jQuery.ajax({
   // url: url + "/wp-content/themes/load.php",
   url: "php/load.php",
   type: "GET",
   success: function (result) {
     var data = JSON.parse(result);
-    var length = data.length;
-    console.log(data);
-    
+    length = data.length;
+
     data.forEach((obj) => {
-      if (isServer == 1) {
-        notes[idx] = obj.timecapsule;
-      } else {
-        notes[idx] = obj.record;
-      }
-      idx++;
-      if ((obj.email == "warriorjhs@outlook.com")) {
+      if (obj.email == "emilyjbach@gmail.com") {
         if (isServer == 1) {
-          emilyData[i] = obj.timecapsule;
+          firstAvatarData[i] = obj.timecapsule;
         } else {
-          emilyData[i] = obj.record;
+          firstAvatarData[i] = obj.record;
         }
         i++;
-      }
-      if ((obj.email == "hi@ivymahsciao.com")) {
+      } else if (obj.email == "dachelledainn@gmail.com") {
         if (isServer == 1) {
-          dachelleData[j] = obj.timecapsule;
+          secondAvatarData[j] = obj.timecapsule;
         } else {
-          dachelleData[j] = obj.record;
+          secondAvatarData[j] = obj.record;
         }
         j++;
-      }
-      if ((obj.email == "tjeng831@berkeley.edu")) {
+      } else if (obj.email == "richardyhz@gmail.com") {
         if (isServer == 1) {
-          stevenData[k] = obj.timecapsule;
+          thirdAvatarData[k] = obj.timecapsule;
         } else {
-          stevenData[k] = obj.record;
+          thirdAvatarData[k] = obj.record;
         }
         k++;
+      } else {
+        if (isServer == 1) {
+          notes[idx] = obj.timecapsule;
+        } else {
+          notes[idx] = obj.record;
+        }
+        idx++;
       }
     });
-    console.log(stevenData);
-    console.log(notes);
+
+    console.log("notes", notes);
+    console.log("firstAvatarData", firstAvatarData);
+    console.log("secondAvatarData", secondAvatarData);
+    console.log("thirdAvatarData", thirdAvatarData);
 
     //  playing in sequence
     player.addEventListener(
@@ -179,259 +160,427 @@ jQuery.ajax({
       },
       false
     );
-    playNote(length, notes);
-
 
     // avatar
-    emilyPlayer.addEventListener(
+    firstAvatarPlayer.addEventListener(
       "ended",
       function () {
-        emilyNote(i, emilyData);
+        firstNote(i, firstAvatarData);
       },
       false
     );
-    emilyNote(i, emilyData);
 
-    dachellePlayer.addEventListener(
+    secondAvatarPlayer.addEventListener(
       "ended",
       function () {
-        dachelleNote(j, dachelleData);
+        secondNote(j, secondAvatarData);
       },
       false
     );
-    dachelleNote(j, dachelleData);
 
-    stevenPlayer.addEventListener(
+    thirdAvatarPlayer.addEventListener(
       "ended",
       function () {
-        stevenNote(k, stevenData);
+        thirdNote(k, thirdAvatarData);
       },
       false
     );
-    stevenNote(k, stevenData);
   },
 });
 
+please_record.style.display = "none";
+audioControl.style.display = "block";
+
+function recordings() {
+  isHear = !isHear;
+
+  if (!firstAvatarPlayer.paused) {
+    if (isServer == 1) {
+      firstAvatarImg.src =
+        url + "/wp-content/uploads/media/avatar-emily-temp.png";
+    } else {
+      firstAvatarImg.src = "assets/avatar-emily-temp.png";
+    }
+    isFirstAvatar = false;
+    firstAvatarPlayer.autoplay = false;
+    firstAvatarPlayer.pause();
+  }
+  if (!secondAvatarPlayer.paused) {
+    isSecondAvatar = false;
+    secondAvatarPlayer.pause();
+    if (isServer == 1) {
+      secondAvatarImg.src =
+        url + "/wp-content/uploads/media/avatar-dachelle.png";
+    } else {
+      secondAvatarImg.src = "assets/avatar-dachelle.png";
+    }
+    secondAvatarPlayer.autoplay = false;
+  }
+
+  if (!thirdAvatarPlayer.paused) {
+    isThirdAvatar = false;
+    thirdAvatarPlayer.pause();
+    thirdAvatarPlayer.autoplay = false;
+    if (isServer == 1) {
+      thirdAvatarImg.src = url + "/wp-content/uploads/media/avatar-richard.png";
+    } else {
+      thirdAvatarImg.src = "assets/avatar-richard.png";
+    }
+  }
+
+  if (isHear) {
+    index = -1;
+    playNote(index, notes);
+    const playPromise = player.play();
+    if (playPromise !== null) {
+      playPromise.catch(() => {
+        /* discard runtime error */
+      });
+    }
+    player.autoplay = true;
+
+    if (isServer == 1) {
+      hearMurmers.src = url + "/wp-content/uploads/media/btn-pause-voices.png";
+    } else {
+      hearMurmers.src = "assets/btn-pause-voices.png";
+    }
+  } else {
+    clearTimeout(playallTime);
+    player.currentTime = 0;
+    player.pause();
+    player.autoplay = false;
+    if (isServer == 1) {
+      hearMurmers.src = url + "/wp-content/uploads/media/btn-play-voices.png";
+    } else {
+      hearMurmers.src = "assets/btn-play-voices.png";
+    }
+  }
+}
 
 function playNote(length, notes) {
-  // console.log(length, notes);
-  if (index >= length) {
-    player.pause();
-    return;
-  }
-  var note = notes[index];
-  if (!note) {
-    return;
-  }
-
   index++;
-
-  var timeInterval = 0;
-
-  if (index == 1) {
-    timeInterval = 0;
-  } else if (index % 3 == 1) {
-    timeInterval = 10000;
+  if (index >= length) {
+    setTimeout(function () {
+      check(0);
+      return;
+    }, 3000);
   } else {
-    timeInterval = 3000;
-  }
+    var note = notes[index];
+    console.log("index, note", index, note);
 
-  setTimeout(function () {
-    player.src = note;
-  }, timeInterval);
+    var timeInterval = 0;
+
+    if (index == 0) {
+      timeInterval = 0;
+    } else if (index % 3 == 2) {
+      timeInterval = 10000;
+    } else {
+      timeInterval = 3000;
+    }
+
+    playallTime = setTimeout(function () {
+      player.src = note;
+    }, timeInterval);
+  }
 
   // player.play();
 }
 
+function ClickFirstAvatar() {
+  isFirstAvatar = !isFirstAvatar;
 
-function emily() {
-  isEmily = !isEmily;
-  console.log("emily: ", isEmily);
-  if (isEmily) {
-    emilyPlayer.play();
+  if (!player.paused) {
+    isHear = false;
+    player.autoplay = false;
+    player.pause();
     if (isServer == 1) {
-      emilyAvatar.src = url + "/wp-content/uploads/media/avatar-emily-pause.png";
+      hearMurmers.src = url + "/wp-content/uploads/media/btn-play-voices.png";
     } else {
-      emilyAvatar.src = "assets/avatar-emily-pause.png";
+      hearMurmers.src = "assets/btn-play-voices.png";
     }
-    emilyPlayer.autoplay = true;
+  }
+  if (!secondAvatarPlayer.paused) {
+    isSecondAvatar = false;
+    secondAvatarPlayer.pause();
+    if (isServer == 1) {
+      secondAvatarImg.src =
+        url + "/wp-content/uploads/media/avatar-dachelle.png";
+    } else {
+      secondAvatarImg.src = "assets/avatar-dachelle.png";
+    }
+    secondAvatarPlayer.autoplay = false;
+  }
+  if (!thirdAvatarPlayer.paused) {
+    isThirdAvatar = false;
+    thirdAvatarPlayer.pause();
+    thirdAvatarPlayer.autoplay = false;
+    if (isServer == 1) {
+      thirdAvatarImg.src = url + "/wp-content/uploads/media/avatar-richard.png";
+    } else {
+      thirdAvatarImg.src = "assets/avatar-richard.png";
+    }
+  }
+
+  console.log("isFirstAvatar: ", isFirstAvatar);
+  if (isFirstAvatar) {
+    firstAvatarIndex = -1;
+    firstNote(i, firstAvatarData);
+    const playPromise = firstAvatarPlayer.play();
+    if (playPromise !== null) {
+      playPromise.catch(() => {
+        /* discard runtime error */
+      });
+    }
+    firstAvatarPlayer.autoplay = true;
+
+    if (isServer == 1) {
+      firstAvatarImg.src =
+        url + "/wp-content/uploads/media/avatar-emily-pause.png";
+    } else {
+      firstAvatarImg.src = "assets/avatar-emily-pause.png";
+    }
   } else {
     if (isServer == 1) {
-      emilyAvatar.src = url + "/wp-content/uploads/media/avatar-emily.png";
+      firstAvatarImg.src =
+        url + "/wp-content/uploads/media/avatar-emily-temp.png";
     } else {
-      emilyAvatar.src = "assets/avatar-emily.png";
+      firstAvatarImg.src = "assets/avatar-emily-temp.png";
     }
-    emilyPlayer.autoplay = false;
-    emilyPlayer.pause();
+    clearTimeout(firstTimeout);
+    firstAvatarPlayer.currentTime = 0;
+    firstAvatarPlayer.autoplay = false;
+    firstAvatarPlayer.pause();
   }
 }
 
-function emilyNote(length, notes) {
-  // console.log(length, notes);
-  if (indexOfemily >= length) {
-    isEmily = false;
-    emilyPlayer.pause();
-    if (isServer == 1) {
-      emilyAvatar.src = url + "/wp-content/uploads/media/avatar-emily.png";
-    } else {
-      emilyAvatar.src = "assets/avatar-emily.png";
-    }
-    return;
-  }
-  var note = notes[indexOfemily];
-  if (!note) {
-    isEmily = false;
-    emilyPlayer.pause();
-    if (isServer == 1) {
-      emilyAvatar.src = url + "/wp-content/uploads/media/avatar-emily.png";
-    } else {
-      emilyAvatar.src = "assets/avatar-emily.png";
-    }
-    return;
-  }
-
-  indexOfemily++;
-
-  var timeInterval = 0;
-
-  if (indexOfemily == 1) {
-    timeInterval = 0;
-  } else if (indexOfemily % 3 == 1) {
-    timeInterval = 10000;
+function check(type) {
+  if (type == 0) {
+    index = -1;
+    playNote(length, notes);
+  } else if (type == 1) {
+    firstAvatarIndex = -1;
+    firstNote(i, firstAvatarData);
+  } else if (type == 2) {
+    secondAvatarIndex = -1;
+    secondNote(j, secondAvatarData);
   } else {
-    timeInterval = 3000;
-  }
-
-  setTimeout(function () {
-    emilyPlayer.src = note;
-  }, timeInterval);
-
-  // player.play();
-}
-
-function dachelle() {
-  isDachelle = !isDachelle;
-  console.log("dachelle");
-  if (isDachelle) {
-    dachellePlayer.play();
-    dachellePlayer.autoplay = true;
-    if (isServer == 1) {
-      dachelleAvatar.src = url + "/wp-content/uploads/media/avatar-dachelle-pause.png";
-    } else {
-      dachelleAvatar.src = "assets/avatar-dachelle-pause.png";
-    }
-  } else {
-    dachellePlayer.pause();
-    if (isServer == 1) {
-      dachelleAvatar.src = url + "/wp-content/uploads/media/avatar-dachelle.png";
-    } else {
-      dachelleAvatar.src = "assets/avatar-dachelle.png";
-    }
-    dachellePlayer.autoplay = false;
+    thirdAvatarIndex = -1;
+    thirdNote(k, thirdAvatarData);
   }
 }
 
-function dachelleNote(length, notes) {
-  // console.log(length, notes);
-  if (indexOfdacheele >= length) {
-    isDachelle = false;
-    dachellePlayer.pause();
-    if (isServer == 1) {
-      dachelleAvatar.src = url + "/wp-content/uploads/media/avatar-dachelle.png";
-    } else {
-      dachelleAvatar.src = "assets/avatar-dachelle.png";
-    }
-    return;
-  }
-  var note = notes[indexOfdacheele];
-  if (!note) {
-    isDachelle = false;
-    if (isServer == 1) {
-      dachelleAvatar.src = url + "/wp-content/uploads/media/avatar-dachelle.png";
-    } else {
-      dachelleAvatar.src = "assets/avatar-dachelle.png";
-    }
-    return;
-  }
-
-  indexOfdacheele++;
-
-  var timeInterval = 0;
-
-  if (indexOfdacheele == 1) {
-    timeInterval = 0;
-  } else if (indexOfdacheele % 3 == 1) {
-    timeInterval = 10000;
+function firstNote(length, notes) {
+  firstAvatarIndex++;
+  if (firstAvatarIndex >= length) {
+    setTimeout(function () {
+      check(1);
+      return;
+    }, 3000);
   } else {
-    timeInterval = 3000;
-  }
+    var note = notes[firstAvatarIndex];
+    console.log("firstAvatarIndex, note", firstAvatarIndex, note);
 
-  setTimeout(function () {
-    dachellePlayer.src = note;
-  }, timeInterval);
-
-  // player.play();
-}
-
-
-function steven() {
-  isSteven = !isSteven;
-  if (isSteven) {
-    stevenPlayer.play();
-    stevenPlayer.autoplay = true;
-    if (isServer == 1) {
-      stevenAvatar.src = url + "/wp-content/uploads/media/avatar-steven-pause.png";
+    var timeInterval = 0;
+    if (firstAvatarIndex == 0) {
+      timeInterval = 0;
+    } else if (firstAvatarIndex % 3 == 2) {
+      timeInterval = 10000;
     } else {
-      stevenAvatar.src = "assets/avatar-steven-pause.png";
+      timeInterval = 3000;
     }
-  } else {
-    stevenPlayer.pause();
-    stevenPlayer.autoplay = false;
-    if (isServer == 1) {
-      stevenAvatar.src = url + "/wp-content/uploads/media/avatar-steven.png";
-    } else {
-      stevenAvatar.src = "assets/avatar-steven.png";
-    }
+
+    firstTimeout = setTimeout(function () {
+      firstAvatarPlayer.src = note;
+    }, timeInterval);
   }
 }
 
-function stevenNote(length, notes) {
-  if (indexOfsteven >= length) {
-    isSteven = false;
-    stevenPlayer.pause();
+function ClickSecondAvatar() {
+  isSecondAvatar = !isSecondAvatar;
+
+  if (!player.paused) {
+    isHear = false;
+    player.autoplay = false;
+    player.pause();
     if (isServer == 1) {
-      stevenAvatar.src = url + "/wp-content/uploads/media/avatar-steven-pause.png";
+      hearMurmers.src = url + "/wp-content/uploads/media/btn-play-voices.png";
     } else {
-      stevenAvatar.src = "assets/avatar-steven.png";
+      hearMurmers.src = "assets/btn-play-voices.png";
     }
-    return;
   }
-  var note = notes[indexOfsteven];
-  if (!note) {
-    isSteven = false;
+  if (!firstAvatarPlayer.paused) {
     if (isServer == 1) {
-      stevenAvatar.src = url + "/wp-content/uploads/media/avatar-steven-pause.png";
+      firstAvatarImg.src =
+        url + "/wp-content/uploads/media/avatar-emily-temp.png";
     } else {
-      stevenAvatar.src = "assets/avatar-steven.png";
+      firstAvatarImg.src = "assets/avatar-emily-temp.png";
     }
-    return;
+    isFirstAvatar = false;
+    firstAvatarPlayer.autoplay = false;
+    firstAvatarPlayer.pause();
   }
+  if (!thirdAvatarPlayer.paused) {
+    isThirdAvatar = false;
+    thirdAvatarPlayer.pause();
+    thirdAvatarPlayer.autoplay = false;
+    if (isServer == 1) {
+      thirdAvatarImg.src = url + "/wp-content/uploads/media/avatar-richard.png";
+    } else {
+      thirdAvatarImg.src = "assets/avatar-richard.png";
+    }
+  }
+  console.log("isSecondAvatar: ", isSecondAvatar);
+  if (isSecondAvatar) {
+    secondAvatarIndex = -1;
+    secondNote(j, secondAvatarData);
+    const playPromise = secondAvatarPlayer.play();
+    if (playPromise !== null) {
+      playPromise.catch(() => {
+        /* discard runtime error */
+      });
+    }
+    secondAvatarPlayer.autoplay = true;
 
-  indexOfsteven++;
-
-  var timeInterval = 0;
-
-  if (indexOfsteven == 1) {
-    timeInterval = 0;
-  } else if (indexOfsteven % 3 == 1) {
-    timeInterval = 10000;
+    if (isServer == 1) {
+      secondAvatarImg.src =
+        url + "/wp-content/uploads/media/avatar-dachelle-pause.png";
+    } else {
+      secondAvatarImg.src = "assets/avatar-dachelle-pause.png";
+    }
   } else {
-    timeInterval = 3000;
+    clearTimeout(secondTimeout);
+    secondAvatarPlayer.currentTime = 0;
+    secondAvatarPlayer.pause();
+    if (isServer == 1) {
+      secondAvatarImg.src =
+        url + "/wp-content/uploads/media/avatar-dachelle.png";
+    } else {
+      secondAvatarImg.src = "assets/avatar-dachelle.png";
+    }
+    secondAvatarPlayer.autoplay = false;
+  }
+}
+
+function secondNote(length, notes) {
+  secondAvatarIndex++;
+
+  if (secondAvatarIndex >= length) {
+    setTimeout(function () {
+      check(2);
+      return;
+    }, 3000);
+  } else {
+    var note = notes[secondAvatarIndex];
+    console.log("secondAvatarIndex, note: ", secondAvatarIndex, note);
+    var timeInterval = 0;
+
+    if (secondAvatarIndex == 0) {
+      timeInterval = 0;
+    } else if (secondAvatarIndex % 3 == 2) {
+      timeInterval = 10000;
+    } else {
+      timeInterval = 3000;
+    }
+
+    secondTimeout = setTimeout(function () {
+      secondAvatarPlayer.src = note;
+    }, timeInterval);
+  }
+}
+
+function ClickThirdAvatar() {
+  isThirdAvatar = !isThirdAvatar;
+
+  if (!player.paused) {
+    isHear = false;
+    player.autoplay = false;
+    player.pause();
+    if (isServer == 1) {
+      hearMurmers.src = url + "/wp-content/uploads/media/btn-play-voices.png";
+    } else {
+      hearMurmers.src = "assets/btn-play-voices.png";
+    }
+  }
+  if (!firstAvatarPlayer.paused) {
+    if (isServer == 1) {
+      firstAvatarImg.src =
+        url + "/wp-content/uploads/media/avatar-emily-temp.png";
+    } else {
+      firstAvatarImg.src = "assets/avatar-emily-temp.png";
+    }
+    isFirstAvatar = false;
+    firstAvatarPlayer.autoplay = false;
+    firstAvatarPlayer.pause();
+  }
+  if (!secondAvatarPlayer.paused) {
+    isFirstAvatar = false;
+    secondAvatarPlayer.pause();
+    if (isServer == 1) {
+      secondAvatarImg.src =
+        url + "/wp-content/uploads/media/avatar-dachelle.png";
+    } else {
+      secondAvatarImg.src = "assets/avatar-dachelle.png";
+    }
+    secondAvatarPlayer.autoplay = false;
   }
 
-  setTimeout(function () {
-    stevenPlayer.src = note;
-  }, timeInterval);
+  if (isThirdAvatar) {
+    thirdAvatarIndex = -1;
+    thirdNote(k, thirdAvatarData);
+    const playPromise = thirdAvatarPlayer.play();
+
+    if (playPromise !== null) {
+      playPromise.catch(() => {
+        /* discard runtime error */
+      });
+    }
+
+    thirdAvatarPlayer.autoplay = true;
+
+    if (isServer == 1) {
+      thirdAvatarImg.src =
+        url + "/wp-content/uploads/media/avatar-richard-pause.png";
+    } else {
+      thirdAvatarImg.src = "assets/avatar-richard-pause.png";
+    }
+  } else {
+    clearTimeout(thirdTimeout);
+    thirdAvatarPlayer.currentTime = 0;
+    thirdAvatarPlayer.pause();
+    thirdAvatarPlayer.autoplay = false;
+    if (isServer == 1) {
+      thirdAvatarImg.src = url + "/wp-content/uploads/media/avatar-richard.png";
+    } else {
+      thirdAvatarImg.src = "assets/avatar-richard.png";
+    }
+  }
+}
+
+function thirdNote(length, notes) {
+  thirdAvatarIndex++;
+
+  if (thirdAvatarIndex >= length) {
+    setTimeout(function () {
+      check(3);
+      return;
+    }, 3000);
+  } else {
+    var note = notes[thirdAvatarIndex];
+    console.log("thirdAvatarIndex, note", thirdAvatarIndex, note);
+    var timeInterval = 0;
+
+    if (thirdAvatarIndex == 0) {
+      timeInterval = 0;
+    } else if (thirdAvatarIndex % 3 == 2) {
+      timeInterval = 10000;
+    } else {
+      timeInterval = 3000;
+    }
+
+    thirdTimeout = setTimeout(function () {
+      thirdAvatarPlayer.src = note;
+    }, timeInterval);
+  }
 }
 // end audio autoplay
 
@@ -439,13 +588,22 @@ function stevenNote(length, notes) {
 const search = document.getElementById("search");
 const match = document.getElementById("match-list");
 const limit = 10;
+
+window.addEventListener("click", function (e) {
+  if (document.getElementById("match-list").contains(e.target)) {
+  } else {
+    match.style.display = "none";
+    publicField.style.display = "block";
+  }
+});
 //search schools.json
 const searchSchools = async (searchText) => {
   match.style.display = "block";
+  publicField.style.display = "none";
   if (isServer == 1) {
-    const res = await fetch(url + "/wp-content/themes/schools.json");
+    var res = await fetch(url + "/wp-content/themes/schools.json");
   } else {
-    const res = await fetch("assets/schools.json");
+    var res = await fetch("assets/schools.json");
   }
   const schools = await res.json();
   //Get matches to current text input
@@ -486,6 +644,7 @@ function setValue(value) {
   // console.log(value);
   search.value = value;
   match.style.display = "none";
+  publicField.style.display = "block";
 }
 
 //end search
@@ -508,13 +667,12 @@ var seconds = 0,
 
 function add() {
   seconds++;
-  if (seconds > 30) {
+  if (seconds > 59) {
     seconds = 0;
     stopRecording();
     clearTimeout(t);
     return;
   }
-
   sw_time.textContent =
     (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") +
     ":" +
@@ -638,16 +796,11 @@ function createDownloadLink(blob) {
     reader.readAsDataURL(blob);
   }
 
-  au.controls = true;
   au.src = url;
-
+  au.controls = true;
   au.id = "recordedfile";
   au.setAttribute("name", "recordfile");
-  au.setAttribute("controlList", "nodownload");
-
-  link.href = url;
-  link.download = filename + ".wav";
-  link.innerHTML = "Save to disk";
+  // au.setAttribute("controlList", "nodownload");
 
   li.appendChild(au);
 
@@ -670,10 +823,11 @@ function createDownloadLink(blob) {
   recordingsList.appendChild(li);
 }
 
-
+var submitBtn = document.getElementById("submitBtn");
 function submitForm(e) {
   e.preventDefault();
   console.log("Submit!!");
+  mask.style.display = "block";
   var myfile = document.getElementById("myfile").value;
   var email = document.getElementById("email").value;
   var firstName = document.getElementById("firstName").value;
@@ -681,14 +835,14 @@ function submitForm(e) {
   var fullName = firstName + " " + lastName;
 
   var schoolvalue = search.value;
+  submitBtn.disabled = true;
 
   if (myfile.length == 0) {
     please_record.style.display = "block";
     return;
   }
 
-  console.log(myfile.length);
-
+  // console.log(myfile.length);
   jQuery.ajax({
     type: "POST",
     // url: url + "/wp-content/themes/action_page.php",
@@ -699,10 +853,10 @@ function submitForm(e) {
       email: email,
       school: schoolvalue,
       url: url,
-      fullname: fullName
+      fullname: fullName,
     },
     success: function (result) {
-      console.log(result);
+      mask.style.display = "none";
       myForm.style.display = "none";
       successMessage.style.display = "block";
       heartAnimation.style.display = "block";
@@ -710,12 +864,10 @@ function submitForm(e) {
       // title.style.display = "none";
       player.style.display = "none";
       audioControl.style.display = "none";
-      first_avatar.style.display = "none";
-
-      console.log("success");
+      avatar.style.display = "none";
 
       jQuery("#share").jsSocials({
-        url: result,
+        url: `https://evermind.online/chronicle-share/?email=${email}`,
         text: "Share your thoughts from the Chronicle with others.",
         showCount: false,
         showLabel: false,
@@ -723,6 +875,21 @@ function submitForm(e) {
       });
 
       social.style.display = "block";
+      submitBtn.disabled = false;
+
+      jQuery.ajax({
+        type: "POST",
+        // url: url + "/wp-content/themes/campaign.php",
+        url: "php/campaign.php",
+        contentType: "application/x-www-form-urlencoded",
+        data: {
+          email: email,
+          fullname: fullName,
+        },
+        success: function (result) {
+          console.log(result);
+        },
+      });
     },
   });
 }

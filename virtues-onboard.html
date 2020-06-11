@@ -1,0 +1,208 @@
+<h5
+  id="successMessage"
+  style="padding-top: 110px !important; font-family: Playfair Display;"
+>
+  <strong>Your thoughts have been saved in the chronicle!</strong><br />Be safe,
+  stay strong and true in rising above the chaos.
+</h5>
+<div id="heart-animation" style="justify-content: center; display: flex;">
+  <lottie-player
+    src="../wp-content/uploads/media/heart.json"
+    background="transparent"
+    speed="1"
+    style="height: 400px; margin-bottom: 150px;"
+    loop
+    autoplay
+    id="heartLottie"
+  ></lottie-player>
+</div>
+
+<!-- <div id="playlist" style="justify-content: center; display: flex;">
+        <audio id="player">
+          <source src="#" />
+        </audio>
+        <div id="audio-control" style="cursor: pointer;">
+          <img id="playBtn" onclick="playRecordings()" />
+          <img id="pauseBtn" onclick="pauseRecordings()" />
+        </div>
+      </div> -->
+
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="../wp-content/themes/css/jssocials.css"
+/>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="../wp-content/themes/css/jssocials-theme-flat.css"
+/>
+<link
+  href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+  rel="stylesheet"
+/>
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+  integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+  crossorigin="anonymous"
+/>
+<link
+  href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+  rel="stylesheet"
+/>
+<script src="../wp-content/themes/js/jssocials.min.js"></script>
+<script src="../wp-content/themes/js/jssocials.js"></script>
+
+<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+<div>
+  <form
+    name="myForm"
+    method="post"
+    enctype="multipart/form-data"
+    onsubmit="submitForm(event);"
+    id="myForm"
+    style="position: relative;"
+  >
+    <div id="wave"></div>
+    <div id="breath-text" style="padding-bottom: 30px;">
+      <h4>
+        Hit record and let your thoughts flow free in the next 5 minutes
+      </h4>
+    </div>
+    <div id="pause-text" style="padding-bottom: 30px;">
+      <h4>
+        You can press the mic to re-record or enter your thoughts into the
+        chronicle now
+      </h4>
+    </div>
+    <div id="stopwatch">
+      <div id="sw-time">
+        <time>00:00</time>
+      </div>
+    </div>
+    <div id="controls">
+      <div id="recordButton">
+        <img
+          class="recordButton"
+          id="recordbtn"
+          style="
+            border-radius: 150px;
+            width: 75px;
+            height: 75px;
+            cursor: pointer;
+          "
+        />
+      </div>
+
+      <!-- stop button -->
+      <div class="btn-record active" id="stopButton">
+        <i class="icn-record">
+          <i class="icn-record-inner"></i>
+          <svg
+            width="14px"
+            height="19px"
+            viewBox="0 0 14 19"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g
+              id="Page-1"
+              stroke="none"
+              stroke-width="1"
+              fill="none"
+              fill-rule="evenodd"
+            >
+              <path
+                d="M7,12 C8.66,12 9.99,10.66 9.99,9 L10,3 C10,1.34 8.66,0 7,0 C5.34,0 4,1.34 4,3 L4,9 C4,10.66 5.34,12 7,12 Z M12.3,9 C12.3,12 9.76,14.1 7,14.1 C4.24,14.1 1.7,12 1.7,9 L0,9 C0,12.41 2.72,15.23 6,15.72 L6,19 L8,19 L8,15.72 C11.28,15.24 14,12.42 14,9 L12.3,9 Z"
+                id="mic"
+                fill="#FFFFFF"
+                fill-rule="nonzero"
+              ></path>
+            </g>
+          </svg>
+        </i>
+      </div>
+    </div>
+    <p id="please-record" style="padding: 15px;">
+      Please record your thoughts before entering the chronicle ...
+    </p>
+    <ol
+      id="recordingsList"
+      name="recordingsList"
+      style="width: 56%; justify-content: center; margin-left: 22%;"
+    ></ol>
+
+    <input type="hidden" name="myfile" id="myfile" />
+
+    <div class="fancy-select-wrap">
+      <div class="form-group">
+        <input
+          required
+          type="email"
+          class="form-control inputClass"
+          name="email"
+          aria-describedby="emailHelp"
+          placeholder="Enter email"
+          id="email"
+          style="width: 50%; margin-left: 25%;"
+        />
+      </div>
+
+      <div class="form-group" id="publicField">
+        <!-- <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="makepublic">
+                    <label class="form-check-label" for="makepublic">
+                      Make my murmurs public
+                    </label>
+                  </div> -->
+        <div id="fullname">
+          <div class="form-group" style="margin-top: 1rem;">
+            <!-- <label for="firstname" style="text-align: center; color: white !important;">First name</label> -->
+            <input
+              required
+              type="text"
+              class="form-control inputClass"
+              id="firstName"
+              placeholder="First name"
+              name="firstName"
+              style="width: 50%; margin-left: 25%;"
+            />
+          </div>
+          <div class="form-group">
+            <!-- <label for="lastname" style="text-align: center; color: white !important;">Last name</label> -->
+            <input
+              required
+              type="text"
+              class="form-control inputClass"
+              id="lastName"
+              placeholder="Last name"
+              name="lastName"
+              style="width: 50%; margin-left: 25%;"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" style="position: relative;">
+        <div class="form-group">
+          <input
+            type="text"
+            id="affiliation"
+            name="school"
+            class="form-control inputClass"
+            placeholder="Optional: hospital/affiliation ..."
+            style="width: 50%; margin-left: 25%;"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div style="justify-content: center; display: flex; margin-top: 20px;">
+      <button type="submit" class="btn btn-outline-primary" id="submitBtn">
+        Hear me now
+      </button>
+    </div>
+  </form>
+</div>
+<script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
